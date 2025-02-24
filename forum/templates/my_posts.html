@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Forum</title>
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <h1>{{ user.username }}'s Profile</h1>
+    <nav>
+        <form action="/" method="post" style="text-align: left;">
+            {% csrf_token %}
+            <button class="bn" type="submit">Home</button>
+        </form>
+        <form action="/my_posts/{{user.username}}" method="post">
+            {% csrf_token %}
+            <button class="bn" type="submit">My posts</button>
+        </form>
+        <form action="/logout" method="post">
+            {% csrf_token %}
+            <button class="bn" type="submit">Logout</button>
+        </form>
+    </nav>
+    <div class="post-card">
+        <h2>{{ user.username }}</h2>
+            <div>
+                <strong>Posts</strong>
+                <p>{{ total_posts }}</p>
+            </div>
+            <div>
+                <strong>Likes</strong>
+                <p>{{ total_likes }}</p>
+            </div>
+    </div>
+    <h2>Your Posts</h2>
+    <div>
+        {% for post in posts %}
+        <div class="post-card">
+            <h2 style="color: #4CAF50;">{{ post.user.username }}</h2>
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content }}</p>
+                {% if post in user.liked_posts.all %}
+                <button class="liked-button"
+                    hx-post="/like/{{ post.id }}"
+                    hx-trigger="click"
+                    hx-target="this"
+                    hx-swap="outerHTML">
+                    <span id="heartIcon" class="red_span">❤️</span>
+                    <span id="like-count-{{ post.id }}" class="red_span">{{ post.no_likes }}</span>
+                </button>
+                {% else %}
+                <button class="like-button"
+                    hx-post="/like/{{ post.id }}"
+                    hx-trigger="click"
+                    hx-target="this"
+                    hx-swap="outerHTML">
+                    <span id="heartIcon" class="red_span">❤️</span>
+                    <span id="like-count-{{ post.id }}" class="red_span">{{ post.no_likes }}</span>
+                </button>
+                {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+
+
+
+
+</body>
